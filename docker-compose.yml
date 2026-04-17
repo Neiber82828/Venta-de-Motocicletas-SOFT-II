@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: proyecto_db
+      MYSQL_USER: proyecto_user
+      MYSQL_PASSWORD: proyecto_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - proyecto_network
+
+  backend:
+    build: ./backend
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=your-secret-key
+      - DB_NAME=proyecto_db
+      - DB_USER=proyecto_user
+      - DB_PASSWORD=proyecto_password
+      - DB_HOST=mysql
+      - DB_PORT=3306
+    depends_on:
+      - mysql
+    volumes:
+      - ./backend:/app
+    networks:
+      - proyecto_network
+
+  frontend:
+    build: ./frontend
+    command: npm start
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - proyecto_network
+
+volumes:
+  mysql_data:
+
+networks:
+  proyecto_network:
+    driver: bridge

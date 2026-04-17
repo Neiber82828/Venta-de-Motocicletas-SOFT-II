@@ -1,43 +1,16 @@
 from django.db import models
 
-# Create your models here.
-class Cliente(models.Model):
+class Usuario(models.Model):
     nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    tipo_documento = models.CharField(max_length=20)
-    numero_documento = models.CharField(max_length=20, unique=True)
-    telefono = models.CharField(max_length=20)
     email = models.EmailField(unique=True)
-    direccion = models.TextField()
-    
-    class Meta:
-        db_table = 'CLIENTES'
-
-    def __str__(self):
-        return f"{self.nombre} {self.apellido}"
-
-
-class Vendedor(models.Model):
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    telefono = models.CharField(max_length=20)
+    telefono = models.CharField(max_length=15, blank=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'VENDEDORES'
+        verbose_name = 'Usuario'
+        verbose_name_plural = 'Usuarios'
+        ordering = ['-fecha_creacion']
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido}"
-
-
-class Administrador(models.Model):
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    telefono = models.CharField(max_length=20)
-
-    class Meta:
-        db_table = 'ADMINISTRADORES'
-
-    def __str__(self):
-        return f"{self.nombre} {self.apellido}"
+        return self.nombre

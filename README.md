@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 //instalar dependencias
 sudo apt update
 sudo apt install python3 python3-pip python3-venv mysql-server mysql-client nodejs npm -y
@@ -47,3 +48,7 @@ pedidos/models.py      → Pedido, DetallePedido, HistorialEstadoPedido
 4. Probar la API con Postman o el navegador
 5. Conectar React con axios
 6. Construir las vistas una por una
+=======
+# Venta-de-Motocicletas-SOFT-II
+El sistema propuesto es una plataforma web para concesionarios YAMAHA que centraliza la gestión de inventario, clientes y ventas. Permite registrar motocicletas, actualizar su estado, generar cotizaciones, gestionar financiación, separaciones y contratos, asegurando información precisa y optimizando el proceso comercial.
+>>>>>>> 941fefa6873860ec67730f722d226f829f8c878f

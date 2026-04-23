@@ -1,20 +1,26 @@
-"""
-URL configuration for config project.
-"""
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
-from usuarios.views import UsuarioViewSet
+
+from usuarios.views import ClienteViewSet, VendedorViewSet, login_view, register_view, me_view
+from motos.views import MotocicletaViewSet
+from pedidos.views import PedidoViewSet, DetallePedidoViewSet
 
 router = DefaultRouter()
-router.register(r'usuarios', UsuarioViewSet, basename='usuario')
+router.register(r'motos', MotocicletaViewSet, basename='moto')
+router.register(r'pedidos', PedidoViewSet, basename='pedido')
+router.register(r'detalles-pedido', DetallePedidoViewSet, basename='detalle-pedido')
+router.register(r'clientes', ClienteViewSet, basename='cliente')
+router.register(r'vendedores', VendedorViewSet, basename='vendedor')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls')),
+    path('api/auth/login/', login_view, name='login'),
+    path('api/auth/register/', register_view, name='register'),
+    path('api/auth/me/', me_view, name='me'),
 ]
 
 if settings.DEBUG:

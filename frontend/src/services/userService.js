@@ -3,7 +3,7 @@ import api from './api';
 // Ejemplo de servicio
 export const getUsers = async () => {
   try {
-    const response = await api.get('/usuarios/');
+    const response = await api.get('/api/usuarios/');
     return response.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -13,7 +13,7 @@ export const getUsers = async () => {
 
 export const createUser = async (userData) => {
   try {
-    const response = await api.post('/usuarios/', userData);
+    const response = await api.post('/api/usuarios/', userData);
     return response.data;
   } catch (error) {
     console.error('Error creating user:', error);

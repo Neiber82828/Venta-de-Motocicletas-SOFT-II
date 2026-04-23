@@ -1,16 +1,45 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-class Usuario(models.Model):
-    nombre = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
+class Cliente(models.Model):
+    TIPO_DOC_CHOICES = [
+        ('cc', 'Cédula de Ciudadanía'),
+        ('ce', 'Cédula de Extranjería'),
+        ('pasaporte', 'Pasaporte'),
+    ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cliente')
+    apellido = models.CharField(max_length=100)
+    tipo_documento = models.CharField(max_length=20, choices=TIPO_DOC_CHOICES, default='cc')
+    numero_documento = models.CharField(max_length=20)
     telefono = models.CharField(max_length=15, blank=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    direccion = models.TextField(blank=True)
 
     class Meta:
-        verbose_name = 'Usuario'
-        verbose_name_plural = 'Usuarios'
-        ordering = ['-fecha_creacion']
+        db_table = 'CLIENTES'
 
     def __str__(self):
-        return self.nombre
+        return f"{self.user.first_name} {self.apellido}"
+
+
+class Vendedor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='vendedor')
+    apellido = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=15, blank=True)
+
+    class Meta:
+        db_table = 'VENDEDORES'
+
+    def __str__(self):
+        return f"{self.user.first_name} {self.apellido}"
+
+
+class Administrador(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='administrador')
+    apellido = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=15, blank=True)
+
+    class Meta:
+        db_table = 'ADMINISTRADORES'
+
+    def __str__(self):
+        return f"{self.user.first_name} {self.apellido}"

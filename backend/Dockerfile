@@ -13,4 +13,6 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
+RUN printf '#!/bin/bash\nset -e\npython manage.py migrate --noinput\npython manage.py seed_data\nexec gunicorn config.wsgi:application --bind 0.0.0.0:8000\n' > entrypoint.sh && chmod +x entrypoint.sh
+
+CMD ["bash", "entrypoint.sh"]

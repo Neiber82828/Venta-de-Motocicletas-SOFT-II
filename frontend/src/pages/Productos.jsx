@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getMotos } from '../services/motoService';
 
 const TIPO_LABELS = {
@@ -13,7 +13,8 @@ const TIPO_LABELS = {
 
 function Productos() {
   const navigate = useNavigate();
-  const [filtro, setFiltro] = useState('todos');
+  const [searchParams] = useSearchParams();
+  const [filtro, setFiltro] = useState(searchParams.get('filtro') ?? 'todos');
   const [motos, setMotos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);

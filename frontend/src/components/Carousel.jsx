@@ -53,13 +53,13 @@ function Carousel() {
             className="w-full h-full object-cover"
           />
           
-          {/* Overlay oscuro */}
-          <div className="absolute inset-0 bg-black bg-opacity-40" />
-          
+          {/* Overlay oscuro con tono de paleta */}
+          <div className="absolute inset-0" style={{background: 'linear-gradient(to bottom, rgba(13,13,26,0.5), rgba(188,67,104,0.25))'}} />
+
           {/* Contenido */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-            <h2 className="text-5xl font-bold mb-2">{slide.title}</h2>
-            <p className="text-2xl">{slide.description}</p>
+            <h2 className="text-5xl font-bold mb-3 drop-shadow-lg">{slide.title}</h2>
+            <p className="text-xl text-rose-100 drop-shadow">{slide.description}</p>
           </div>
         </div>
       ))}

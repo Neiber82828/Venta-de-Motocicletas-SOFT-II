@@ -5,9 +5,9 @@ import { getMotos } from '../services/motoService';
 import { getClientes } from '../services/clienteService';
 
 const ESTADO_COLOR = {
-  pendiente: 'bg-yellow-100 text-yellow-800',
-  confirmado: 'bg-green-100 text-green-800',
-  cancelado: 'bg-red-100 text-red-800',
+  pendiente:  'bg-yellow-900/40 text-yellow-300 border border-yellow-700',
+  confirmado: 'bg-green-900/40 text-green-300 border border-green-700',
+  cancelado:  'bg-rose-900/40 text-rose-300 border border-rose-700',
 };
 
 function Vendedor() {
@@ -26,12 +26,11 @@ function Vendedor() {
   const [pedidoActivo, setPedidoActivo] = useState(null);
 
   useEffect(() => {
-    Promise.all([getClientes(), getMotos()])
-      .then(([c, m]) => {
-        setClientes(Array.isArray(c) ? c : []);
-        const items = Array.isArray(m) ? m : m.results ?? [];
-        setMotos(items.filter((mo) => mo.estado === 'disponible'));
-      });
+    Promise.all([getClientes(), getMotos()]).then(([c, m]) => {
+      setClientes(Array.isArray(c) ? c : []);
+      const items = Array.isArray(m) ? m : m.results ?? [];
+      setMotos(items.filter((mo) => mo.estado === 'disponible'));
+    });
   }, []);
 
   const cargarPedidos = () => {
@@ -41,9 +40,7 @@ function Vendedor() {
       .finally(() => setCargandoPedidos(false));
   };
 
-  useEffect(() => {
-    cargarPedidos();
-  }, []);
+  useEffect(() => { cargarPedidos(); }, []);
 
   const motoSeleccionada = motos.find((m) => String(m.id) === String(form.id_motocicleta));
 
@@ -88,21 +85,28 @@ function Vendedor() {
     setCambiando(null);
   };
 
+  const inputClass =
+    'w-full bg-brand-800 border border-brand-500 text-snow rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-primary focus:ring-1 focus:ring-rose-primary transition';
+  const labelClass = 'block text-xs font-semibold text-silver uppercase mb-1 tracking-wide';
+
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
+    <div className="min-h-screen bg-brand-800 py-10 page-enter">
       <div className="max-w-5xl mx-auto px-4">
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="bg-blue-900 px-8 py-6 flex items-center space-x-4">
-            <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+        <div className="bg-brand-700 border border-brand-500 rounded-2xl overflow-hidden">
+
+          {/* Header */}
+          <div className="bg-gradient-to-r from-rose-primary to-rose-mid px-8 py-6 flex items-center space-x-4">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center text-white font-bold text-lg">
               {user.first_name?.[0]?.toUpperCase() ?? 'V'}
             </div>
             <div>
               <p className="text-white font-bold text-lg">Panel Vendedor</p>
-              <p className="text-blue-300 text-sm">{user.first_name || user.username}</p>
+              <p className="text-white/70 text-sm">{user.first_name || user.username}</p>
             </div>
           </div>
 
-          <div className="flex border-b border-gray-200">
+          {/* Tabs */}
+          <div className="flex border-b border-brand-600">
             {[
               { key: 'registrar', label: 'Registrar Pedido' },
               { key: 'gestionar', label: 'Gestionar Pedidos' },
@@ -110,10 +114,10 @@ function Vendedor() {
               <button
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`px-6 py-3 text-sm font-semibold transition border-b-2 ${
+                className={`px-6 py-3 text-sm font-semibold transition-all duration-200 border-b-2 ${
                   tab === t.key
-                    ? 'border-blue-700 text-blue-700'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? 'border-rose-primary text-rose-light'
+                    : 'border-transparent text-silver hover:text-snow'
                 }`}
               >
                 {t.label}
@@ -123,16 +127,14 @@ function Vendedor() {
 
           <div className="p-8">
             {tab === 'registrar' && (
-              <form onSubmit={handleRegistrar} className="max-w-lg space-y-5">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Nuevo Pedido</h2>
+              <form onSubmit={handleRegistrar} className="max-w-lg space-y-5 fade-in">
+                <h2 className="text-xl font-bold text-snow mb-4">Nuevo Pedido</h2>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Cliente</label>
-                  <select
-                    value={form.id_cliente}
+                  <label className={labelClass}>Cliente</label>
+                  <select value={form.id_cliente}
                     onChange={(e) => setForm({ ...form, id_cliente: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
+                    className={inputClass}>
                     <option value="">Seleccionar cliente...</option>
                     {clientes.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -143,12 +145,10 @@ function Vendedor() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Motocicleta</label>
-                  <select
-                    value={form.id_motocicleta}
+                  <label className={labelClass}>Motocicleta</label>
+                  <select value={form.id_motocicleta}
                     onChange={(e) => setForm({ ...form, id_motocicleta: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
+                    className={inputClass}>
                     <option value="">Seleccionar moto...</option>
                     {motos.map((m) => (
                       <option key={m.id} value={m.id}>
@@ -159,93 +159,79 @@ function Vendedor() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Cantidad</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={form.cantidad}
+                  <label className={labelClass}>Cantidad</label>
+                  <input type="number" min="1" value={form.cantidad}
                     onChange={(e) => setForm({ ...form, cantidad: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                    className={inputClass} />
                 </div>
 
                 {motoSeleccionada && (
-                  <div className="bg-blue-50 rounded-lg p-4 text-sm">
-                    <p className="text-gray-600">Moto: <span className="font-semibold text-gray-900">{motoSeleccionada.nombre}</span></p>
-                    <p className="text-gray-600">Precio unitario: <span className="font-semibold">${Number(motoSeleccionada.precio_lista).toLocaleString('es-CO')}</span></p>
-                    <p className="text-gray-600 font-semibold mt-1">
+                  <div className="bg-brand-800 border border-rose-primary/30 rounded-xl p-4 text-sm fade-in">
+                    <p className="text-silver">Moto: <span className="font-semibold text-snow">{motoSeleccionada.nombre}</span></p>
+                    <p className="text-silver">Precio unitario: <span className="font-semibold text-rose-light">${Number(motoSeleccionada.precio_lista).toLocaleString('es-CO')}</span></p>
+                    <p className="text-snow font-bold mt-2 text-base">
                       Total: ${(Number(motoSeleccionada.precio_lista) * Number(form.cantidad)).toLocaleString('es-CO')}
                     </p>
                   </div>
                 )}
 
                 {mensajeForm && (
-                  <p className={`text-sm px-3 py-2 rounded ${mensajeForm.includes('exitosamente') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                  <p className={`text-sm px-4 py-3 rounded-lg fade-in ${mensajeForm.includes('exitosamente') ? 'bg-green-900/40 text-green-300 border border-green-700' : 'bg-rose-900/40 text-rose-300 border border-rose-700'}`}>
                     {mensajeForm}
                   </p>
                 )}
 
-                <button
-                  type="submit"
-                  disabled={enviando}
-                  className="w-full bg-blue-700 hover:bg-blue-800 disabled:bg-gray-300 text-white font-semibold py-2 rounded-lg transition"
-                >
+                <button type="submit" disabled={enviando}
+                  className="w-full bg-rose-primary hover:bg-rose-mid disabled:opacity-50 text-white font-semibold py-2 rounded-lg transition-all duration-300 hover:shadow-[0_0_16px_rgba(188,67,104,0.4)]">
                   {enviando ? 'Registrando...' : 'Registrar Pedido'}
                 </button>
               </form>
             )}
 
             {tab === 'gestionar' && (
-              <>
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Pedidos</h2>
+              <div className="fade-in">
+                <h2 className="text-xl font-bold text-snow mb-6">Pedidos</h2>
                 {cargandoPedidos ? (
-                  <p className="text-gray-500 text-center py-8">Cargando...</p>
+                  <p className="text-silver text-center py-8">Cargando...</p>
                 ) : pedidos.length === 0 ? (
-                  <p className="text-gray-400 text-center py-8">No hay pedidos registrados.</p>
+                  <p className="text-silver text-center py-8">No hay pedidos registrados.</p>
                 ) : (
-                  <div className="overflow-x-auto rounded-xl border border-gray-200">
+                  <div className="overflow-x-auto rounded-xl border border-brand-500">
                     <table className="w-full text-sm">
-                      <thead className="bg-blue-900 text-white">
+                      <thead className="bg-brand-900 border-b border-brand-600">
                         <tr>
-                          <th className="px-4 py-3 text-left">ID</th>
-                          <th className="px-4 py-3 text-left">Cliente</th>
-                          <th className="px-4 py-3 text-left">Monto</th>
-                          <th className="px-4 py-3 text-left">Estado</th>
-                          <th className="px-4 py-3 text-left">Fecha</th>
-                          <th className="px-4 py-3 text-left">Acción</th>
+                          {['ID', 'Cliente', 'Monto', 'Estado', 'Fecha', 'Acción'].map((h) => (
+                            <th key={h} className="px-4 py-3 text-left text-xs uppercase tracking-wider text-silver">{h}</th>
+                          ))}
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-100">
+                      <tbody className="divide-y divide-brand-600">
                         {pedidos.map((p) => (
                           <React.Fragment key={p.id}>
                             <tr
-                              className="hover:bg-gray-50 cursor-pointer"
+                              className="hover:bg-brand-600 cursor-pointer transition-colors duration-150"
                               onClick={() => setPedidoActivo(pedidoActivo === p.id ? null : p.id)}
                             >
-                              <td className="px-4 py-3 font-mono text-gray-500">#{String(p.id).padStart(6, '0')}</td>
-                              <td className="px-4 py-3 font-medium text-gray-900">{p.cliente_nombre}</td>
-                              <td className="px-4 py-3 font-semibold">${Number(p.monto_total).toLocaleString('es-CO')}</td>
+                              <td className="px-4 py-3 font-mono text-silver text-xs">#{String(p.id).padStart(6, '0')}</td>
+                              <td className="px-4 py-3 font-medium text-snow">{p.cliente_nombre}</td>
+                              <td className="px-4 py-3 font-semibold text-rose-light">${Number(p.monto_total).toLocaleString('es-CO')}</td>
                               <td className="px-4 py-3">
                                 <span className={`px-2 py-1 rounded-full text-xs font-semibold ${ESTADO_COLOR[p.estado]}`}>
                                   {p.estado.charAt(0).toUpperCase() + p.estado.slice(1)}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-gray-500">{new Date(p.fecha_pedido).toLocaleDateString('es-CO')}</td>
+                              <td className="px-4 py-3 text-silver">{new Date(p.fecha_pedido).toLocaleDateString('es-CO')}</td>
                               <td className="px-4 py-3">
                                 {p.estado === 'pendiente' && (
                                   <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                                    <button
-                                      disabled={cambiando === p.id}
+                                    <button disabled={cambiando === p.id}
                                       onClick={() => handleCambiarEstado(p.id, 'confirmado')}
-                                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs disabled:opacity-50"
-                                    >
+                                      className="bg-green-700 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-xs disabled:opacity-50 transition">
                                       Confirmar
                                     </button>
-                                    <button
-                                      disabled={cambiando === p.id}
+                                    <button disabled={cambiando === p.id}
                                       onClick={() => handleCambiarEstado(p.id, 'cancelado')}
-                                      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs disabled:opacity-50"
-                                    >
+                                      className="bg-rose-primary hover:bg-rose-mid text-white px-3 py-1 rounded-lg text-xs disabled:opacity-50 transition">
                                       Cancelar
                                     </button>
                                   </div>
@@ -254,12 +240,12 @@ function Vendedor() {
                             </tr>
                             {pedidoActivo === p.id && p.detalles?.length > 0 && (
                               <tr>
-                                <td colSpan={6} className="bg-gray-50 px-6 py-3 border-t border-gray-100">
-                                  <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Motos del pedido</p>
+                                <td colSpan={6} className="bg-brand-800 px-6 py-3 border-t border-brand-600">
+                                  <p className="text-xs font-semibold text-rose-mid uppercase mb-2 tracking-wide">Motos del pedido</p>
                                   {p.detalles.map((d, i) => (
-                                    <div key={i} className="flex justify-between text-sm py-1 border-b border-gray-200 last:border-0">
-                                      <span className="text-gray-800 font-medium">{d.motocicleta?.nombre ?? 'Motocicleta'}</span>
-                                      <span className="text-gray-500">{d.cantidad} × ${Number(d.precio_unitario).toLocaleString('es-CO')}</span>
+                                    <div key={i} className="flex justify-between text-sm py-1 border-b border-brand-600 last:border-0">
+                                      <span className="text-snow font-medium">{d.motocicleta?.nombre ?? 'Motocicleta'}</span>
+                                      <span className="text-silver">{d.cantidad} × ${Number(d.precio_unitario).toLocaleString('es-CO')}</span>
                                     </div>
                                   ))}
                                 </td>
@@ -271,7 +257,7 @@ function Vendedor() {
                     </table>
                   </div>
                 )}
-              </>
+              </div>
             )}
           </div>
         </div>

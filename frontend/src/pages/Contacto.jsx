@@ -13,151 +13,106 @@ function Contacto() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Formulario enviado:', formData);
     setEnviado(true);
     setFormData({ nombre: '', email: '', telefono: '', asunto: '', mensaje: '' });
     setTimeout(() => setEnviado(false), 5000);
   };
 
+  const inputClass =
+    'w-full bg-brand-700 border border-brand-500 text-snow placeholder-silver rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-rose-primary focus:ring-1 focus:ring-rose-primary transition';
+
+  const labelClass = 'block text-xs font-semibold text-silver uppercase mb-1 tracking-wide';
+
+  const info = [
+    { titulo: 'Dirección', contenido: 'Calle Principal 123\n28000 Madrid, España' },
+    { titulo: 'Teléfono', contenido: '+34 (91) 123-4567\nLunes a Viernes 9AM – 6PM' },
+    { titulo: 'Email', contenido: 'info@yamaha.es\nventas@yamaha.es' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-brand-800 py-12 page-enter">
       <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-4xl font-bold text-gray-900 mb-12 text-center">
-          Contacto
-        </h1>
+        <h1 className="text-4xl font-bold text-snow mb-2 text-center">Contacto</h1>
+        <p className="text-silver text-center mb-12">Estamos aquí para ayudarte</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Información de contacto */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Información de Contacto
-            </h2>
+          {/* Información */}
+          <div className="space-y-5 slide-left">
+            <h2 className="text-2xl font-bold text-snow mb-6">Información de Contacto</h2>
 
-            <div className="space-y-6">
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-bold text-blue-600 mb-2">Dirección</h3>
-                <p className="text-gray-600">
-                  Calle Principal 123<br />
-                  28000 Madrid, España
-                </p>
+            {info.map((item) => (
+              <div
+                key={item.titulo}
+                className="bg-brand-700 border border-brand-500 hover:border-rose-primary p-6 rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(188,67,104,0.2)]"
+              >
+                <h3 className="text-sm font-bold uppercase tracking-wider text-rose-mid mb-2">{item.titulo}</h3>
+                <p className="text-silver text-sm whitespace-pre-line">{item.contenido}</p>
               </div>
+            ))}
 
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-bold text-blue-600 mb-2">Teléfono</h3>
-                <p className="text-gray-600">
-                  +34 (91) 123-4567<br />
-                  Horario: Lunes a Viernes 9AM - 6PM
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-bold text-blue-600 mb-2">Email</h3>
-                <p className="text-gray-600">
-                  info@yamaha.es<br />
-                  ventas@yamaha.es
-                </p>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="text-xl font-bold text-blue-600 mb-2">Redes Sociales</h3>
-                <p className="text-2xl space-x-4">
-                  <span className="cursor-pointer hover:text-blue-600 transition">📘</span>
-                  <span className="cursor-pointer hover:text-blue-400 transition">𝕏</span>
-                  <span className="cursor-pointer hover:text-pink-600 transition">📷</span>
-                  <span className="cursor-pointer hover:text-red-600 transition">▶️</span>
-                </p>
+            <div className="bg-brand-700 border border-brand-500 hover:border-rose-primary p-6 rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(188,67,104,0.2)]">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-rose-mid mb-3">Redes Sociales</h3>
+              <div className="flex gap-4 text-2xl">
+                <span className="cursor-pointer hover:scale-125 transition-transform duration-200">📘</span>
+                <span className="cursor-pointer hover:scale-125 transition-transform duration-200">𝕏</span>
+                <span className="cursor-pointer hover:scale-125 transition-transform duration-200">📷</span>
+                <span className="cursor-pointer hover:scale-125 transition-transform duration-200">▶️</span>
               </div>
             </div>
           </div>
 
-          {/* Formulario de contacto */}
+          {/* Formulario */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Envíanos un Mensaje
-            </h2>
+            <h2 className="text-2xl font-bold text-snow mb-6">Envíanos un Mensaje</h2>
 
             {enviado && (
-              <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-                ✓ ¡Mensaje enviado correctamente! Nos pondremos en contacto pronto.
+              <div className="mb-6 p-4 bg-green-900/40 border border-green-600 text-green-300 rounded-xl fade-in">
+                ✓ ¡Mensaje enviado! Nos pondremos en contacto pronto.
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md">
-              <div className="mb-6">
-                <label className="block text-gray-700 font-bold mb-2">Nombre</label>
-                <input
-                  type="text"
-                  name="nombre"
-                  value={formData.nombre}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-600"
-                  placeholder="Tu nombre"
-                />
+            <form
+              onSubmit={handleSubmit}
+              className="bg-brand-700 border border-brand-500 p-8 rounded-xl space-y-5"
+            >
+              <div>
+                <label className={labelClass}>Nombre</label>
+                <input type="text" name="nombre" value={formData.nombre}
+                  onChange={handleChange} required className={inputClass} placeholder="Tu nombre" />
               </div>
 
-              <div className="mb-6">
-                <label className="block text-gray-700 font-bold mb-2">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-600"
-                  placeholder="tu@email.com"
-                />
+              <div>
+                <label className={labelClass}>Email</label>
+                <input type="email" name="email" value={formData.email}
+                  onChange={handleChange} required className={inputClass} placeholder="tu@email.com" />
               </div>
 
-              <div className="mb-6">
-                <label className="block text-gray-700 font-bold mb-2">Teléfono</label>
-                <input
-                  type="tel"
-                  name="telefono"
-                  value={formData.telefono}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-600"
-                  placeholder="+34 123 456 789"
-                />
+              <div>
+                <label className={labelClass}>Teléfono</label>
+                <input type="tel" name="telefono" value={formData.telefono}
+                  onChange={handleChange} className={inputClass} placeholder="+34 123 456 789" />
               </div>
 
-              <div className="mb-6">
-                <label className="block text-gray-700 font-bold mb-2">Asunto</label>
-                <input
-                  type="text"
-                  name="asunto"
-                  value={formData.asunto}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-600"
-                  placeholder="¿En qué podemos ayudarte?"
-                />
+              <div>
+                <label className={labelClass}>Asunto</label>
+                <input type="text" name="asunto" value={formData.asunto}
+                  onChange={handleChange} required className={inputClass} placeholder="¿En qué podemos ayudarte?" />
               </div>
 
-              <div className="mb-6">
-                <label className="block text-gray-700 font-bold mb-2">Mensaje</label>
-                <textarea
-                  name="mensaje"
-                  value={formData.mensaje}
-                  onChange={handleChange}
-                  required
-                  rows="5"
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-600"
-                  placeholder="Escribe tu mensaje aquí..."
-                />
+              <div>
+                <label className={labelClass}>Mensaje</label>
+                <textarea name="mensaje" value={formData.mensaje} onChange={handleChange}
+                  required rows="5" className={inputClass} placeholder="Escribe tu mensaje aquí..." />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded transition"
+                className="w-full bg-rose-primary hover:bg-rose-mid text-white font-bold py-3 rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_rgba(188,67,104,0.5)]"
               >
                 Enviar Mensaje
               </button>

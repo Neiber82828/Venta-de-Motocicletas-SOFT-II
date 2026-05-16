@@ -6,9 +6,9 @@ import { getVendedores } from '../services/vendedorService';
 import { useAuth } from '../context/AuthContext';
 
 const ESTADO_COLOR = {
-  disponible: 'bg-green-100 text-green-800',
-  reservada: 'bg-yellow-100 text-yellow-800',
-  vendida: 'bg-red-100 text-red-800',
+  disponible: 'bg-green-900/40 text-green-300 border border-green-700',
+  reservada:  'bg-yellow-900/40 text-yellow-300 border border-yellow-700',
+  vendida:    'bg-rose-900/40 text-rose-300 border border-rose-700',
 };
 
 function DetalleMoto() {
@@ -60,36 +60,45 @@ function DetalleMoto() {
     }
   };
 
-  if (cargando) return <div className="min-h-screen flex items-center justify-center"><p className="text-gray-500">Cargando...</p></div>;
+  if (cargando) return (
+    <div className="min-h-screen bg-brand-800 flex items-center justify-center">
+      <p className="text-silver">Cargando...</p>
+    </div>
+  );
   if (!moto) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
+    <div className="min-h-screen bg-brand-800 py-10 page-enter">
       <div className="max-w-5xl mx-auto px-4">
-        <button onClick={() => navigate('/productos')} className="text-blue-600 hover:underline mb-6 inline-block">
+        <button
+          onClick={() => navigate('/productos')}
+          className="text-rose-mid hover:text-rose-light transition mb-6 inline-flex items-center gap-1 text-sm font-medium"
+        >
           ← Volver al catálogo
         </button>
 
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="bg-brand-700 border border-brand-500 rounded-2xl overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
-            <div className="bg-gradient-to-br from-blue-700 to-blue-950 flex items-center justify-center p-16">
-              <span className="text-9xl">🏍️</span>
+            {/* Imagen */}
+            <div className="bg-gradient-to-br from-rose-primary to-brand-900 flex items-center justify-center p-16">
+              <span className="text-9xl drop-shadow-2xl">🏍️</span>
             </div>
 
+            {/* Info y compra */}
             <div className="p-8 flex flex-col justify-between">
               <div>
-                <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide">YAMAHA</p>
-                <h1 className="text-3xl font-bold text-gray-900 mt-1 mb-2">{moto.nombre}</h1>
+                <p className="text-xs font-bold text-rose-mid uppercase tracking-widest">YAMAHA</p>
+                <h1 className="text-3xl font-bold text-snow mt-1 mb-3">{moto.nombre}</h1>
                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${ESTADO_COLOR[moto.estado]}`}>
                   {moto.estado?.toUpperCase()}
                 </span>
-                <p className="text-4xl font-bold text-blue-700 mb-2">
+                <p className="text-4xl font-bold text-rose-light mb-1">
                   ${Number(moto.precio_lista).toLocaleString('es-CO')}
                 </p>
-                <p className="text-sm text-gray-400 mb-6">*Precio con IVA incluido, sujeto a modificaciones</p>
+                <p className="text-xs text-silver mb-6">*Precio con IVA incluido, sujeto a modificaciones</p>
 
                 {mensaje && (
-                  <div className={`mb-4 p-3 rounded text-sm ${mensaje.includes('exitosamente') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                  <div className={`mb-4 p-3 rounded-lg text-sm fade-in ${mensaje.includes('exitosamente') ? 'bg-green-900/40 text-green-300 border border-green-700' : 'bg-rose-900/40 text-rose-300 border border-rose-700'}`}>
                     {mensaje}
                   </div>
                 )}
@@ -97,34 +106,38 @@ function DetalleMoto() {
                 <button
                   onClick={handleComprar}
                   disabled={comprando || moto.estado !== 'disponible'}
-                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-gray-300 text-white font-bold py-3 rounded-lg text-lg transition"
+                  className="w-full bg-rose-primary hover:bg-rose-mid disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-lg transition-all duration-300 hover:shadow-[0_0_24px_rgba(188,67,104,0.6)]"
                 >
                   {comprando ? 'Procesando...' : moto.estado === 'disponible' ? 'COMPRAR AHORA' : 'NO DISPONIBLE'}
                 </button>
               </div>
 
-              <p className="text-sm text-gray-400 mt-4">Stock disponible: {moto.stock} unidades</p>
+              <p className="text-sm text-silver mt-4">Stock disponible: {moto.stock} unidades</p>
             </div>
           </div>
 
-          <div className="border-t border-gray-100 p-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Especificaciones Técnicas</h2>
+          {/* Especificaciones */}
+          <div className="border-t border-brand-600 p-8">
+            <h2 className="text-xl font-bold text-snow mb-6">Especificaciones Técnicas</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { label: 'CILINDRAJE', value: `${moto.cilindraje} cc` },
-                { label: 'TIPO', value: moto.tipo_moto },
-                { label: 'AÑO', value: moto.anio },
-                { label: 'COMBUSTIBLE', value: moto.tipo_combustible },
-                { label: 'POTENCIA MÁXIMA', value: moto.potencia_maxima || '-' },
-                { label: 'TORQUE MÁXIMO', value: moto.torque_maximo || '-' },
-                { label: 'PESO', value: moto.peso || '-' },
-                { label: 'TIPO MOTOR', value: moto.tipo_motor || '-' },
-                { label: 'VELOCIDADES', value: moto.velocidades ? `${moto.velocidades} vel.` : '-' },
-                { label: 'COLOR', value: moto.color || '-' },
+                { label: 'CILINDRAJE',     value: `${moto.cilindraje} cc` },
+                { label: 'TIPO',           value: moto.tipo_moto },
+                { label: 'AÑO',            value: moto.anio },
+                { label: 'COMBUSTIBLE',    value: moto.tipo_combustible },
+                { label: 'POT. MÁXIMA',    value: moto.potencia_maxima  || '-' },
+                { label: 'TORQUE MÁXIMO',  value: moto.torque_maximo    || '-' },
+                { label: 'PESO',           value: moto.peso             || '-' },
+                { label: 'TIPO MOTOR',     value: moto.tipo_motor       || '-' },
+                { label: 'VELOCIDADES',    value: moto.velocidades ? `${moto.velocidades} vel.` : '-' },
+                { label: 'COLOR',          value: moto.color            || '-' },
               ].map((spec) => (
-                <div key={spec.label} className="bg-blue-50 rounded-lg p-4">
-                  <p className="text-xs font-semibold text-blue-600 uppercase">{spec.label}</p>
-                  <p className="text-gray-900 font-medium mt-1">{spec.value}</p>
+                <div
+                  key={spec.label}
+                  className="card-enter bg-brand-800 border border-brand-500 hover:border-rose-primary/40 rounded-xl p-4 transition-all duration-200"
+                >
+                  <p className="text-xs font-bold text-rose-mid uppercase tracking-wider">{spec.label}</p>
+                  <p className="text-snow font-medium mt-1 capitalize">{spec.value}</p>
                 </div>
               ))}
             </div>

@@ -24,20 +24,30 @@ Plataforma web de venta de motocicletas con tres roles de usuario: cliente, vend
 
 ### Backend
 
+**Linux / Mac**
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+source venv/bin/activate
 pip install -r requirements.txt
 bash start.sh
 ```
 
-El script `start.sh` ejecuta automáticamente:
-1. `python manage.py migrate` — aplica las migraciones
-2. `python manage.py seed_data` — carga usuarios y motos iniciales
-3. `python manage.py runserver` — inicia el servidor en http://localhost:8000
+**Windows (CMD o PowerShell)**
+```cmd
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py seed_data
+python manage.py runserver
+```
 
+> `start.sh` no funciona en Windows, por eso los tres últimos comandos se ejecutan manualmente.
 > Si los datos ya existen, `seed_data` los omite sin error.
+
+El servidor queda disponible en http://localhost:8000
 
 ### Frontend
 

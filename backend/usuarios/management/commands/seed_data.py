@@ -1,7 +1,11 @@
+import random
+from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from django.utils import timezone
 from usuarios.models import Cliente, Vendedor, Administrador
 from motos.models import Motocicleta
+from pedidos.models import Pedido, DetallePedido, HistorialEstadoPedido
 
 
 USUARIOS = [
@@ -36,6 +40,66 @@ USUARIOS = [
             'numero_documento': '12345678',
             'telefono': '3201234567',
             'direccion': 'Calle 45 #23-10, Bucaramanga',
+        },
+    },
+    {
+        'username': 'cliente_juan',
+        'first_name': 'Juan',
+        'email': 'juan.perez@mail.com',
+        'password': 'Cliente2026',
+        'is_staff': False,
+        'rol': 'cliente',
+        'perfil': {
+            'apellido': 'Pérez',
+            'tipo_documento': 'cc',
+            'numero_documento': '87654321',
+            'telefono': '3112345678',
+            'direccion': 'Carrera 12 #34-56, Medellín',
+        },
+    },
+    {
+        'username': 'cliente_sofia',
+        'first_name': 'Sofía',
+        'email': 'sofia.ramirez@mail.com',
+        'password': 'Cliente2026',
+        'is_staff': False,
+        'rol': 'cliente',
+        'perfil': {
+            'apellido': 'Ramírez',
+            'tipo_documento': 'cc',
+            'numero_documento': '11223344',
+            'telefono': '3189876543',
+            'direccion': 'Avenida 80 #45-12, Bogotá',
+        },
+    },
+    {
+        'username': 'cliente_mario',
+        'first_name': 'Mario',
+        'email': 'mario.torres@mail.com',
+        'password': 'Cliente2026',
+        'is_staff': False,
+        'rol': 'cliente',
+        'perfil': {
+            'apellido': 'Torres',
+            'tipo_documento': 'cc',
+            'numero_documento': '55667788',
+            'telefono': '3005551234',
+            'direccion': 'Calle 72 #10-30, Cali',
+        },
+    },
+    {
+        'username': 'cliente_laura',
+        'first_name': 'Laura',
+        'email': 'laura.gomez@mail.com',
+        'password': 'Cliente2026',
+        'is_staff': False,
+        'rol': 'cliente',
+        'perfil': {
+            'apellido': 'Gómez',
+            'tipo_documento': 'cc',
+            'numero_documento': '99887766',
+            'telefono': '3156667788',
+            'direccion': 'Calle 100 #15-20, Barranquilla',
         },
     },
 ]
@@ -171,9 +235,25 @@ MOTOS = [
     },
 ]
 
+COMENTARIOS_CONFIRMADO = [
+    'Pago verificado, pedido aprobado.',
+    'Cliente realizó transferencia exitosamente.',
+    'Documentos en regla, pedido confirmado.',
+    'Pago en efectivo recibido.',
+    'Financiamiento aprobado por la entidad.',
+]
+
+COMENTARIOS_CANCELADO = [
+    'Cliente desistió de la compra.',
+    'Problemas con el financiamiento.',
+    'Moto no disponible en el color solicitado.',
+    'Cliente no se presentó a recoger.',
+    'Solicitud de cancelación por el cliente.',
+]
+
 
 class Command(BaseCommand):
-    help = 'Inicializa los datos base del sistema (usuarios y motocicletas)'
+    help = 'Inicializa los datos base del sistema (usuarios, motocicletas y pedidos de ejemplo)'
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -187,11 +267,15 @@ class Command(BaseCommand):
 
         if reset:
             self.stdout.write('Eliminando datos existentes...')
+            HistorialEstadoPedido.objects.all().delete()
+            DetallePedido.objects.all().delete()
+            Pedido.objects.all().delete()
             Motocicleta.objects.all().delete()
             User.objects.filter(is_superuser=False).delete()
 
         self._crear_usuarios()
         self._crear_motos()
+        self._crear_pedidos()
         self.stdout.write(self.style.SUCCESS('Datos inicializados correctamente.'))
 
     def _crear_usuarios(self):
@@ -229,3 +313,74 @@ class Command(BaseCommand):
                 continue
             Motocicleta.objects.create(**datos)
             self.stdout.write(f'  Creada moto: {nombre}')
+
+    def _crear_pedidos(self):
+        if Pedido.objects.count() >= 30:
+            self.stdout.write('  Pedidos ya existen (30+), se omite la generación.')
+            return
+
+        clientes = list(Cliente.objects.all())
+        vendedores = list(Vendedor.objects.all())
+        motos = list(Motocicleta.objects.all())
+
+        if not clientes or not vendedores or not motos:
+            self.stdout.write(self.style.WARNING('  No hay clientes, vendedores o motos para crear pedidos.'))
+            return
+
+        # Distribución de estados: 12 confirmados, 10 pendientes, 8 cancelados
+        estados = (
+            ['confirmado'] * 12
+            + ['pendiente'] * 10
+            + ['cancelado'] * 8
+        )
+        random.shuffle(estados)
+
+        ahora = timezone.now()
+
+        for i, estado in enumerate(estados):
+            cliente = random.choice(clientes)
+            vendedor = random.choice(vendedores)
+            moto = random.choice(motos)
+            cantidad = random.randint(1, 2)
+            monto_total = moto.precio_lista * cantidad
+
+            # Fecha aleatoria en los últimos 12 meses
+            dias_atras = random.randint(1, 365)
+            fecha_pedido = ahora - timedelta(days=dias_atras)
+
+            pedido = Pedido.objects.create(
+                id_cliente=cliente,
+                id_vendedor=vendedor,
+                monto_total=monto_total,
+                estado=estado,
+                cantidad=cantidad,
+            )
+            # Actualizar la fecha porque el campo usa auto_now_add
+            Pedido.objects.filter(pk=pedido.pk).update(fecha_pedido=fecha_pedido)
+
+            DetallePedido.objects.create(
+                id_pedido=pedido,
+                id_motocicleta=moto,
+                precio_unitario=moto.precio_lista,
+                cantidad=cantidad,
+                estado=estado,
+            )
+
+            # Historial para pedidos que cambiaron de estado
+            if estado in ('confirmado', 'cancelado'):
+                comentario = (
+                    random.choice(COMENTARIOS_CONFIRMADO)
+                    if estado == 'confirmado'
+                    else random.choice(COMENTARIOS_CANCELADO)
+                )
+                historial = HistorialEstadoPedido.objects.create(
+                    id_pedido=pedido,
+                    id_vendedor=vendedor,
+                    estado_anterior='pendiente',
+                    estado_nuevo=estado,
+                    comentarios=comentario,
+                )
+                fecha_cambio = fecha_pedido + timedelta(hours=random.randint(1, 48))
+                HistorialEstadoPedido.objects.filter(pk=historial.pk).update(fecha_cambio=fecha_cambio)
+
+        self.stdout.write(f'  Creados 30 pedidos aleatorios.')

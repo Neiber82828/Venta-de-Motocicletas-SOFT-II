@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Carousel from '../components/Carousel';
 import { getMotos } from '../services/motoService';
+import { getMotoImage } from '../utils/motoImages';
 
 const TIPO_LABELS = {
   naked: 'Naked',
@@ -78,8 +79,12 @@ function Home() {
                 key={moto.id}
                 className="card-enter group bg-brand-700 border border-brand-500 hover:border-rose-primary rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_28px_rgba(188,67,104,0.25)] hover:-translate-y-2"
               >
-                <div className="bg-gradient-to-br from-rose-primary to-brand-900 p-12 text-center text-5xl group-hover:from-rose-mid transition-all duration-300">
-                  🏍️
+                <div className="bg-gradient-to-br from-rose-primary/20 to-brand-900 p-4 flex items-center justify-center h-56 overflow-hidden">
+                  {getMotoImage(moto.nombre)
+                    ? <img src={getMotoImage(moto.nombre)} alt={moto.nombre}
+                        className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300" />
+                    : <span className="text-6xl">🏍️</span>
+                  }
                 </div>
                 <div className="p-6">
                   <span className="text-xs font-semibold uppercase text-rose-mid">

@@ -1,4 +1,5 @@
 from django.db.models import Count, Sum
+from django.db.models.functions import TruncMonth
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -89,6 +90,31 @@ class PedidoViewSet(ModelViewSet):
 
         pedidos_data = PedidoSerializer(qs.order_by('-fecha_pedido')[:50], many=True).data
 
+        ventas_por_moto = [
+            {
+                'moto': row['id_motocicleta__nombre'].replace('Yamaha ', ''),
+                'unidades': row['total'],
+                'ingresos': float(row['ingresos'] or 0),
+            }
+            for row in DetallePedido.objects
+            .filter(id_pedido__in=qs)
+            .values('id_motocicleta__nombre')
+            .annotate(total=Sum('cantidad'), ingresos=Sum('precio_unitario'))
+            .order_by('-total')
+        ]
+
+        pedidos_por_mes = [
+            {
+                'mes': row['mes'].strftime('%b %Y'),
+                'pedidos': row['n'],
+                'ingresos': float(row['ingresos'] or 0),
+            }
+            for row in qs.annotate(mes=TruncMonth('fecha_pedido'))
+            .values('mes')
+            .annotate(n=Count('id'), ingresos=Sum('monto_total'))
+            .order_by('mes')
+        ]
+
         return Response({
             'total': qs.count(),
             'confirmados': counts_by_estado.get('confirmado', 0),
@@ -97,6 +123,8 @@ class PedidoViewSet(ModelViewSet):
             'mas_vendida': mas_vendida,
             'menos_vendida': menos_vendida,
             'pedidos': pedidos_data,
+            'ventas_por_moto': ventas_por_moto,
+            'pedidos_por_mes': pedidos_por_mes,
         })
 
 

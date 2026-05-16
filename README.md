@@ -13,6 +13,10 @@ Plataforma web de venta de motocicletas con tres roles de usuario: cliente, vend
 | `admin_sistema` | `AdminUIS2026` | Administrador — reportes y consultas |
 | `vendedor_yamaha` | `Vendedor2026` | Vendedor — registrar y gestionar pedidos |
 | `cliente_yamaha` | `Test2026` | Cliente — explorar catálogo y comprar |
+| `cliente_juan` | `Test2026` | Cliente — Juan Pérez |
+| `cliente_sofia` | `Test2026` | Cliente — Sofía Ramírez |
+| `cliente_mario` | `Test2026` | Cliente — Mario López |
+| `cliente_laura` | `Test2026` | Cliente — Laura Gómez |
 
 ---
 

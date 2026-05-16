@@ -4,6 +4,7 @@ import { getMoto } from '../services/motoService';
 import { createPedido, createDetalle } from '../services/pedidoService';
 import { getVendedores } from '../services/vendedorService';
 import { useAuth } from '../context/AuthContext';
+import { getMotoImage } from '../utils/motoImages';
 
 const ESTADO_COLOR = {
   disponible: 'bg-green-900/40 text-green-300 border border-green-700',
@@ -80,8 +81,12 @@ function DetalleMoto() {
         <div className="bg-brand-700 border border-brand-500 rounded-2xl overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2">
             {/* Imagen */}
-            <div className="bg-gradient-to-br from-rose-primary to-brand-900 flex items-center justify-center p-16">
-              <span className="text-9xl drop-shadow-2xl">🏍️</span>
+            <div className="bg-gradient-to-br from-rose-primary/20 to-brand-900 flex items-center justify-center p-6 min-h-96">
+              {getMotoImage(moto.nombre)
+                ? <img src={getMotoImage(moto.nombre)} alt={moto.nombre}
+                    className="w-full h-80 object-contain" />
+                : <span className="text-9xl drop-shadow-2xl">🏍️</span>
+              }
             </div>
 
             {/* Info y compra */}

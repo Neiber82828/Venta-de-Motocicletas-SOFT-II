@@ -56,7 +56,10 @@ function Admin() {
 
   const cargarReporte = (params) => {
     setCargando(true);
-    getReporte(params).then(setReporte).finally(() => setCargando(false));
+    getReporte(params)
+      .then(setReporte)
+      .catch(() => {})
+      .finally(() => setCargando(false));
   };
 
   useEffect(() => { cargarReporte({}); }, []);

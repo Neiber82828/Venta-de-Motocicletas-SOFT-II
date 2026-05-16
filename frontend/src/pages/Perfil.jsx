@@ -17,6 +17,7 @@ function Perfil() {
   useEffect(() => {
     getPedidos()
       .then((data) => setPedidos(Array.isArray(data) ? data : data.results ?? []))
+      .catch(() => {})
       .finally(() => setCargando(false));
   }, []);
 

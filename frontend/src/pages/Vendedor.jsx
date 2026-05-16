@@ -26,17 +26,20 @@ function Vendedor() {
   const [pedidoActivo, setPedidoActivo] = useState(null);
 
   useEffect(() => {
-    Promise.all([getClientes(), getMotos()]).then(([c, m]) => {
-      setClientes(Array.isArray(c) ? c : []);
-      const items = Array.isArray(m) ? m : m.results ?? [];
-      setMotos(items.filter((mo) => mo.estado === 'disponible'));
-    });
+    Promise.all([getClientes(), getMotos()])
+      .then(([c, m]) => {
+        setClientes(Array.isArray(c) ? c : []);
+        const items = Array.isArray(m) ? m : m.results ?? [];
+        setMotos(items.filter((mo) => mo.estado === 'disponible'));
+      })
+      .catch(() => {});
   }, []);
 
   const cargarPedidos = () => {
     setCargandoPedidos(true);
     getPedidos()
       .then((data) => setPedidos(Array.isArray(data) ? data : data.results ?? []))
+      .catch(() => {})
       .finally(() => setCargandoPedidos(false));
   };
 
